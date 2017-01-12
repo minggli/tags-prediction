@@ -32,3 +32,4 @@ token = doc[1]
 print(token)
 sentence = next(doc.sents)
 assert token is sentence[0]
+
