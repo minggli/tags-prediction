@@ -23,10 +23,9 @@ test_string = 'James is travelling to London this Sunday. We are too.'
 doc = nlp(test_string)
 
 # testing
-for sent in doc.sents:
-    print(sent)
 
 doc = nlp.tokenizer(test_string)
-nlp.tagger(doc)
-nlp.parser(doc)
-nlp.entity(doc)
+print(nlp.tagger(doc))
+print(nlp.parser(doc))
+print(nlp.entity(doc))
+
