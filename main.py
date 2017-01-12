@@ -22,10 +22,13 @@ test_string = 'James is travelling to London this Sunday. We are too.'
 
 doc = nlp(test_string)
 
+print(doc.ents)
 # testing
+print(type(doc))
 
-doc = nlp.tokenizer(test_string)
-print(nlp.tagger(doc))
-print(nlp.parser(doc))
-print(nlp.entity(doc))
-
+sentence = next(doc.sents)
+print(sentence)
+token = doc[1]
+print(token)
+sentence = next(doc.sents)
+assert token is sentence[0]

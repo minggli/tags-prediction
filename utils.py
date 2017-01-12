@@ -4,7 +4,7 @@ import zipfile as zf
 
 
 def zip_to_df(path):
-    """unzip files and load uncompressed csv files into a list of panda data frames"""
+    """read zip files and load uncompressed csv files into a list of panda dataframes"""
 
     zip_files = [f for f in os.listdir(path) if f.endswith('.zip')]
     df_objects = list()
