@@ -1,3 +1,3 @@
 PATHS = {
-    'DATA': 'data/',
+    'DATA': 'data/'
 }

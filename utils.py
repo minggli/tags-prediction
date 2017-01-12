@@ -1,17 +1,20 @@
 import pandas as pd
-import zipfile as zf
 import os
+import zipfile as zf
 from settings import PATHS
 
-zip_files = [f for f in os.listdir(PATHS['DATA']) if f.endswith('.zip')]
 
-df_objs = list()
+def zip_to_df(path):
 
-for i in zip_files:
-    zip_obj = zf.ZipFile(file=PATHS['DATA'] + i)
-    filename = zip_obj.namelist()[0]
-    df = pd.read_csv(filepath_or_buffer=zip_obj.open(filename), index_col='id')
-    df_objs.append(df)
+    zip_files = [f for f in os.listdir(path) if f.endswith('.zip')]
+    df_objs = list()
 
+    for i in zip_files:
+        zip_obj = zf.ZipFile(file=PATHS['DATA'] + i)
+        filename = zip_obj.namelist()[0]
+        df = pd.read_csv(filepath_or_buffer=zip_obj.open(filename), index_col='id')
+        zip_obj.close()
+        df_objs.append(df)
+        print('{}: {}'.format(filename, df.columns))
 
-print(df_objs)
+    return df_objs
