@@ -1,20 +1,21 @@
 import pandas as pd
 import os
 import zipfile as zf
-from settings import PATHS
 
 
 def zip_to_df(path):
+    """unzip files and load uncompressed csv files into a list of panda data frames"""
 
     zip_files = [f for f in os.listdir(path) if f.endswith('.zip')]
-    df_objs = list()
+    df_objects = list()
 
     for i in zip_files:
         zip_obj = zf.ZipFile(file=path + i)
         filename = zip_obj.namelist()[0]
         df = pd.read_csv(filepath_or_buffer=zip_obj.open(filename), index_col='id')
         zip_obj.close()
-        df_objs.append(df)
-        print(filename)
+        df_objects.append(df)
+        print('unzipping {}...'.format(filename))
 
-    return df_objs
+    return df_objects
+
