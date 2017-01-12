@@ -18,7 +18,15 @@ def pipeline(lang='en'):
 
 nlp = pipeline()
 
-doc = nlp('we are travelling to London this Sunday.')
+test_string = 'James is travelling to London this Sunday. We are too.'
+
+doc = nlp(test_string)
 
 # testing
-print(doc.ents[1].label_)
+for sent in doc.sents:
+    print(sent)
+
+doc = nlp.tokenizer(test_string)
+nlp.tagger(doc)
+nlp.parser(doc)
+nlp.entity(doc)

@@ -12,10 +12,10 @@ def zip_to_df(path):
     for i in zip_files:
         zip_obj = zf.ZipFile(file=path + i)
         filename = zip_obj.namelist()[0]
+        print('unzipping {}...'.format(filename))
         df = pd.read_csv(filepath_or_buffer=zip_obj.open(filename), index_col='id')
         zip_obj.close()
         df_objects.append(df)
-        print('unzipping {}...'.format(filename))
 
     return df_objects
 
