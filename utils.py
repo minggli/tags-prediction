@@ -10,11 +10,11 @@ def zip_to_df(path):
     df_objs = list()
 
     for i in zip_files:
-        zip_obj = zf.ZipFile(file=PATHS['DATA'] + i)
+        zip_obj = zf.ZipFile(file=path + i)
         filename = zip_obj.namelist()[0]
         df = pd.read_csv(filepath_or_buffer=zip_obj.open(filename), index_col='id')
         zip_obj.close()
         df_objs.append(df)
-        print('{}: {}'.format(filename, df.columns))
+        print(filename)
 
     return df_objs
