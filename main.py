@@ -20,3 +20,5 @@ nlp = pipeline()
 
 doc = nlp('we are travelling to London this Sunday.')
 
+# testing
+print(doc.ents)
