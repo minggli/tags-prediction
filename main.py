@@ -17,7 +17,12 @@ dataframes = unzip_folder(PATHS['DATA'])
 #
 # doc = nlp(sample['content'])
 
-sample = dataframes[0]
+sample = dataframes[0]['content'].loc[51248]
 
-print(sample['title'].iloc[0])
+# print(sample)
+
+soup = BeautifulSoup(sample, 'html5lib')
+
+print(dataframes[0]['content'])
+print(soup.text)
 
