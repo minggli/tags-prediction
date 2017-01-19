@@ -10,9 +10,9 @@ df = unzip_folder(PATHS['DATA'])
 
 nlp = spacy.en.English(tagger=True, parser=True, entity=True)
 
-iterator = CleansedDataIter(df[0])
+texts = CleansedDataIter(df[0])
 
-for k, i in enumerate(iterator):
+for k, i in enumerate(texts):
     if k == 13195:
         final = i
         break
@@ -32,9 +32,15 @@ def lemmatize(doc_object):
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
 
-doc = nlp(' '.join(sample))
+doc = nlp.make_doc(' '.join(sample))
+print(type(doc))
 
-combined = pos_filter(lemmatize(doc), stop_word=False)
+# combined = pos_filter(lemmatize(doc), stop_word=False)
+#
+# print(doc)
+# print(combined)
 
-print(doc)
-print(combined)
+
+for doc in nlp.pipe(texts=texts, n_threads=3, batch_size=10000):
+    print(len(doc))
+
