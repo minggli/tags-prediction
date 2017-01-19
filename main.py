@@ -11,7 +11,7 @@ df = unzip_folder(PATHS['DATA'])
 
 nlp = pipeline()
 
-load = CleansedData(df[0])
+load = CleansedData(df[-3])
 
 for k, i in enumerate(load):
     if k == 13195:
@@ -23,6 +23,7 @@ for k, i in enumerate(load):
 sample = [final[i] for i in range(len(final))]
 
 doc = nlp(str(sample[2]))
+print(load.is_processed)
 
 
 def pos_filter(doc_object, parts=['NOUN']):
