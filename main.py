@@ -8,7 +8,7 @@ __author__ = 'Ming Li'
 
 df = unzip_folder(PATHS['DATA'])
 
-nlp = spacy.en.English(tagger=True, parser=True, entity=True)
+nlp = spacy.load('en')
 
 texts = CleansedDataIter(df[0])
 
@@ -33,14 +33,23 @@ def lemmatize(doc_object):
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
 
 doc = nlp.make_doc(' '.join(sample))
-print(type(doc))
 
-# combined = pos_filter(lemmatize(doc), stop_word=False)
-#
-# print(doc)
-# print(combined)
+combined = pos_filter(lemmatize(doc), stop_word=False)
+
+print(doc)
+print(combined)
 
 
-for doc in nlp.pipe(texts=texts, n_threads=3, batch_size=10000):
+def generate_training_data(data_iter):
+    for row in data_iter:
+        yield ' '.join(row[1:4])
+
+count = 0
+
+for doc in nlp.pipe(texts=generate_training_data(texts), n_threads=3, batch_size=10000):
+    count += 1
     print(len(doc))
 
+print(count)
+
+print(texts.)

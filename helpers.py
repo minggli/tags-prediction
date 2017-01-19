@@ -60,6 +60,7 @@ class CleansedDataIter(object):
         self.is_processed = False
 
     def _parse(self, input_data):
+        """extract texts from html and punctuations"""
         html_string = BeautifulSoup(input_data, 'html5lib').text
         string = html_string.lower().translate(str.maketrans('', '', PUNC))
         return string
