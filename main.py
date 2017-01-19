@@ -37,6 +37,5 @@ def lemmatize(doc_object):
 
 print(doc)
 
-print(lemmatize(doc))
-print(pos_filter(doc))
+print(pos_filter(lemmatize(doc), parts=['NOUN']))
 
