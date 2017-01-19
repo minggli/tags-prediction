@@ -75,9 +75,9 @@ class Cleanse(object):
         return True if self._clean_df else False
 
     def __iter__(self):
-        if not self.is_processed:
+        if not self.is_processed():
             self._process()
-        for row in self._clean_df:
+        for row in iter(self._clean_df):
             yield row
 
     def __str__(self):
