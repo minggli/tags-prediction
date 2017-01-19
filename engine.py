@@ -1,1 +1,1 @@
-# TODO find out how to predict tags
+# TODO choose a suitable algorithm to predict tags

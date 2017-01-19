@@ -27,6 +27,7 @@ def pos_filter(doc_object, parts=['NOUN']):
 
 
 def lemmatize(doc_object):
+    """using SpaCy's lemmatization to standardize words"""
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
 
