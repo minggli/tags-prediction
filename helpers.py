@@ -3,6 +3,7 @@ import os
 import zipfile as zf
 import spacy
 from settings import PUNC
+import numpy as np
 import re
 from bs4 import BeautifulSoup
 import warnings
@@ -78,7 +79,7 @@ class CleansedData(object):
         if not self.is_processed():
             self.process()
         for row in self.data.itertuples():
-            yield row
+            yield np.array(row)
 
     def __str__(self):
         return '{} {} object'.format(self.status[self.is_processed()], self.__class__.__name__)

@@ -1,4 +1,4 @@
-from utils import unzip_folder, test, pipeline, CleansedData
+from helpers import unzip_folder, test, pipeline, CleansedData
 from settings import PATHS, PUNC
 import pandas as pd
 import numpy as np
@@ -12,22 +12,21 @@ __author__ = 'Ming Li'
 
 df = unzip_folder(PATHS['DATA'])
 
-# nlp = pipeline()
-
-# TODO find out how to predict tags
-
-# sample = sample.translate(sample.maketrans('', '', PUNC))
-
-# doc = nlp(sample)
-
-# print(soup.text)
-
+nlp = pipeline()
 
 load = CleansedData(df[0])
 
 for k, i in enumerate(load):
     if k == 13195:
         final = i
-    print(i)
+        break
+    print(k, i)
 
-print(final[0])
+
+# TODO find out how to predict tags
+
+sample = [final[i] for i in range(len(final))]
+
+doc = nlp(sample[2])
+
+print(doc)
