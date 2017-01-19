@@ -27,6 +27,6 @@ for k, i in enumerate(load):
 
 sample = [final[i] for i in range(len(final))]
 
-doc = nlp(sample[2])
+doc = nlp(str(sample[2]))
 
 print(doc)
