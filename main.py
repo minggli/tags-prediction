@@ -1,4 +1,4 @@
-from helpers import unzip_folder, test, pipeline, CleansedData
+from helpers import CleansedData,unzip_folder, test, pipeline
 from settings import PATHS, PUNC
 import pandas as pd
 import numpy as np
@@ -23,8 +23,6 @@ for k, i in enumerate(load):
 sample = [final[i] for i in range(len(final))]
 
 doc = nlp(str(sample[1]))
-print(load.is_processed())
-
 
 def pos_filter(doc_object, parts=['NOUN']):
     """filter unrelated parts of speech (POS) and return required parts"""
