@@ -1,28 +1,29 @@
-from utils import unzip_folder, test, pipeline, Parser
-from settings import PATHS
+from utils import unzip_folder, test, pipeline, Cleanse
+from settings import PATHS, PUNC
 import pandas as pd
 import numpy as np
 import spacy
 from bs4 import BeautifulSoup
+import string
+import re
 
 
 __author__ = 'Ming Li'
 
-dataframes = unzip_folder(PATHS['DATA'])
+df = unzip_folder(PATHS['DATA'])
 
 # nlp = pipeline()
 
 # TODO find out how to predict tags
 
-#
-# doc = nlp(sample['content'])
+# sample = sample.translate(sample.maketrans('', '', PUNC))
 
-sample = dataframes[0]['content'].loc[51248]
+# doc = nlp(sample)
 
-# print(sample)
+# print(soup.text)
 
-soup = BeautifulSoup(sample, 'html5lib')
 
-print(dataframes[0]['content'])
-print(soup.text)
-
+load = Cleanse(df[0])
+print(len(load))
+# for i in load:
+#     print(i)
