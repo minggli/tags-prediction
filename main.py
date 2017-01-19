@@ -17,8 +17,6 @@ for k, i in enumerate(load):
         final = i
         break
 
-# TODO find out how to predict tags
-
 sample = [final[i] for i in range(len(final))]
 
 
@@ -31,7 +29,6 @@ def pos_filter(doc_object, parts=['NOUN']):
 def lemmatize(doc_object):
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
-
 
 
 doc = nlp(str(sample[0]))
@@ -53,3 +50,4 @@ print(doc)
 
 print(pos_filter(lemmatize(doc), parts=['NOUN']))
 
+print(sample)
