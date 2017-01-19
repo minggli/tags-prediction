@@ -32,7 +32,7 @@ def lemmatize(doc_object):
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
 
-doc = nlp.make_doc(' '.join(sample))
+doc = nlp(' '.join(sample))
 
 combined = pos_filter(lemmatize(doc), stop_word=False)
 
@@ -48,8 +48,7 @@ count = 0
 
 for doc in nlp.pipe(texts=generate_training_data(texts), n_threads=3, batch_size=10000):
     count += 1
-    print(len(doc))
 
 print(count)
 
-print(texts.)
+print(len(texts.data))
