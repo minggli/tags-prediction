@@ -24,6 +24,10 @@ df = unzip_folder(PATHS['DATA'])
 
 
 load = Cleanse(df[0])
-print(len(load))
-# for i in load:
-#     print(i)
+# b = Cleanse(df[1])
+# print(len(load))
+# print(len(b))
+# print(load < b)
+
+for i in load:
+    print(i)

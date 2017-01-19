@@ -85,3 +85,9 @@ class Cleanse(object):
 
     def __len__(self):
         return self._df.shape[0]
+
+    def __gt__(self, other):
+        return self.__len__() > other.__len__()
+
+    def __ge__(self, other):
+        return self.__len__() >= other.__len__()
