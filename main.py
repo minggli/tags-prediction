@@ -30,5 +30,5 @@ for k, i in enumerate(load):
         final = i
     print(i)
 
-print(final[2])
+print(final[0])
 

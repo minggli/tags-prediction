@@ -62,8 +62,8 @@ class CleansedData(object):
         self._df = df
         self.data = None
 
-    def _parse(self, text):
-        html_string = BeautifulSoup(text, 'html5lib').text
+    def _parse(self, input_data):
+        html_string = BeautifulSoup(input_data, 'html5lib').text
         string = html_string.lower().translate(str.maketrans('', '', PUNC))
         return string
 
