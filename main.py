@@ -10,7 +10,7 @@ df = unzip_folder(PATHS['DATA'])
 
 nlp = pipeline()
 
-load = CleansedData(df[-1])
+load = CleansedData(df[1])
 
 for k, i in enumerate(load):
     if k == 13195:
@@ -20,8 +20,6 @@ for k, i in enumerate(load):
 # TODO find out how to predict tags
 
 sample = [final[i] for i in range(len(final))]
-
-doc = nlp(str(sample[1]))
 
 
 def pos_filter(doc_object, parts=['NOUN']):
@@ -33,6 +31,23 @@ def pos_filter(doc_object, parts=['NOUN']):
 def lemmatize(doc_object):
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
+
+
+
+doc = nlp(str(sample[0]))
+
+print(doc)
+
+print(pos_filter(lemmatize(doc), parts=['NOUN']))
+
+
+doc = nlp(str(sample[1]))
+
+print(doc)
+
+print(pos_filter(lemmatize(doc), parts=['NOUN']))
+
+doc = nlp(str(sample[2]))
 
 print(doc)
 
