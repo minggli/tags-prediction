@@ -17,7 +17,6 @@ for k, i in enumerate(load):
     if k == 13195:
         final = i
         break
-    print(k, i)
 
 # TODO find out how to predict tags
 
@@ -25,11 +24,24 @@ sample = [final[i] for i in range(len(final))]
 
 doc = nlp(str(sample[2]))
 
+
+def pos_filter(doc_object, parts=['NOUN']):
+    """filter unrelated parts of speech (POS) and return required parts"""
+    # TODO need to simplify
+    filtered = list()
+    for token in doc_object:
+        print(token.pos_, token.pos)
+        if token.pos_ in parts:
+            filtered.append(str(token))
+    return  nlp(' '.join(filtered))
+
+
+def lemmatize(doc_object):
+    return nlp(' '.join([str(token.lemma_) for token in doc_object]))
+
 print(doc)
+print(type(doc))
 
-for token in doc:
-    print(token.pos_, token.pos)
+print(lemmatize(doc))
+print(pos_filter(doc))
 
-def pos_filter(text, parts=['NOUN']):
-    for token in nlp(text):
-        if token.pos in parts
