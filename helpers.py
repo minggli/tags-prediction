@@ -27,14 +27,9 @@ def unzip_folder(path):
     return list_dataframes
 
 
-def pipeline(lang='en'):
-    """construct a language process pipeline"""
-    return spacy.load(lang)
-
-
 def test(test_string='James is travelling to London this Sunday. We are too.'):
 
-    doc = pipeline()(test_string)
+    doc = spacy.en.English(test_string)
 
     for sentence in doc.sents:
         print(sentence)
@@ -51,7 +46,7 @@ def test(test_string='James is travelling to London this Sunday. We are too.'):
     print(doc[0].similarity(doc[6]))
 
 
-class CleansedData(object):
+class CleansedDataIter(object):
 
     status = {
         True: 'Processed',
@@ -78,7 +73,7 @@ class CleansedData(object):
         if not self.is_processed:
             self.process()
         for row in self.data.itertuples():
-            yield np.array(row)
+            yield row
 
     def __str__(self):
         return '{} {} object'.format(self.status[self.is_processed], self.__class__.__name__)
