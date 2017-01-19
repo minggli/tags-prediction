@@ -29,3 +29,7 @@ print(doc)
 
 for token in doc:
     print(token.pos_, token.pos)
+
+def pos_filter(text, parts=['NOUN']):
+    for token in nlp(text):
+        if token.pos in parts
