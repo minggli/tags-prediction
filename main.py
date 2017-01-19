@@ -17,7 +17,7 @@ for k, i in enumerate(load):
         final = i
         break
 
-sample = [final[i] for i in range(len(final))]
+sample = [str(final[i]) for i in range(len(final))]
 
 
 def pos_filter(doc_object, parts=['NOUN']):

@@ -62,6 +62,7 @@ class CleansedData(object):
         assert isinstance(df, pd.DataFrame), 'input require Pandas DataFrame object.'
         self._df = df
         self.data = None
+        self.is_processed = False
 
     def _parse(self, input_data):
         html_string = BeautifulSoup(input_data, 'html5lib').text
@@ -71,18 +72,16 @@ class CleansedData(object):
     def process(self):
         print('\npre-precessing texts...', flush=True)
         self.data = self._df.applymap(lambda x: self._parse(x))
-
-    def is_processed(self):
-        return False if self.data is None else True
+        self.is_processed = True
 
     def __iter__(self):
-        if not self.is_processed():
+        if not self.is_processed:
             self.process()
         for row in self.data.itertuples():
             yield np.array(row)
 
     def __str__(self):
-        return '{} {} object'.format(self.status[self.is_processed()], self.__class__.__name__)
+        return '{} {} object'.format(self.status[self.is_processed], self.__class__.__name__)
 
     def __len__(self):
         return self._df.shape[0]
