@@ -1,4 +1,4 @@
-from utils import unzip_folder, test, pipeline, Cleanse
+from utils import unzip_folder, test, pipeline, CleansedData
 from settings import PATHS, PUNC
 import pandas as pd
 import numpy as np
@@ -23,11 +23,12 @@ df = unzip_folder(PATHS['DATA'])
 # print(soup.text)
 
 
-load = Cleanse(df[0])
-# b = Cleanse(df[1])
-# print(len(load))
-# print(len(b))
-# print(load < b)
+load = CleansedData(df[0])
 
-for i in load:
+for k, i in enumerate(load):
+    if k == 13195:
+        final = i
     print(i)
+
+print(final[2])
+

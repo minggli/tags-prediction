@@ -50,7 +50,7 @@ def test(test_string='James is travelling to London this Sunday. We are too.'):
     print(doc[0].similarity(doc[6]))
 
 
-class Cleanse(object):
+class CleansedData(object):
 
     status = {
         True: 'Processed',
@@ -60,24 +60,24 @@ class Cleanse(object):
     def __init__(self, df):
         assert isinstance(df, pd.DataFrame), 'input require Pandas DataFrame object.'
         self._df = df
-        self._clean_df = None
+        self.data = None
 
     def _parse(self, text):
         html_string = BeautifulSoup(text, 'html5lib').text
         string = html_string.lower().translate(str.maketrans('', '', PUNC))
         return string
 
-    def _process(self):
+    def process(self):
         print('\npre-precessing texts...', flush=True)
-        self._clean_df = self._df.applymap(lambda x: self._parse(x))
+        self.data = self._df.applymap(lambda x: self._parse(x))
 
     def is_processed(self):
-        return True if self._clean_df else False
+        return False if self.data is None else True
 
     def __iter__(self):
         if not self.is_processed():
-            self._process()
-        for row in iter(self._clean_df):
+            self.process()
+        for row in self.data.itertuples():
             yield row
 
     def __str__(self):
