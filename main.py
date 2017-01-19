@@ -20,10 +20,11 @@ for k, i in enumerate(load):
 sample = [str(final[i]) for i in range(len(final))]
 
 
-def pos_filter(doc_object, parts=['NOUN']):
+def pos_filter(doc_object, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}
+           , stop_word=False):
     """filter unrelated parts of speech (POS) and return required parts"""
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
-    return nlp(' '.join([str(token) for token in doc_object if token.pos_ in parts]))
+    return nlp(' '.join([str(token) for token in doc_object if token.pos_ in parts and token.is_stop is stop_word]))
 
 
 def lemmatize(doc_object):
@@ -31,24 +32,10 @@ def lemmatize(doc_object):
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
 
+doc1 = nlp(str(sample[1]))
+doc2 = nlp(str(sample[2]))
 
-doc = nlp(str(sample[0]))
+combined = pos_filter(lemmatize(doc1), stop_word=False) + pos_filter(lemmatize(doc2), stop_word=False)
 
-print(doc)
-
-print(pos_filter(lemmatize(doc), parts=['NOUN']))
-
-
-doc = nlp(str(sample[1]))
-
-print(doc)
-
-print(pos_filter(lemmatize(doc), parts=['NOUN']))
-
-doc = nlp(str(sample[2]))
-
-print(doc)
-
-print(pos_filter(lemmatize(doc), parts=['NOUN']))
-
-print(sample)
+print(doc1 + doc2)
+print(combined)
