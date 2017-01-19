@@ -27,20 +27,15 @@ doc = nlp(str(sample[2]))
 
 def pos_filter(doc_object, parts=['NOUN']):
     """filter unrelated parts of speech (POS) and return required parts"""
-    # TODO need to simplify
-    filtered = list()
-    for token in doc_object:
-        print(token.pos_, token.pos)
-        if token.pos_ in parts:
-            filtered.append(str(token))
-    return  nlp(' '.join(filtered))
+    assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
+    return nlp(' '.join([str(token) for token in doc_object if token.pos_ in parts]))
 
 
 def lemmatize(doc_object):
+    assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
 
 print(doc)
-print(type(doc))
 
 print(lemmatize(doc))
 print(pos_filter(doc))
