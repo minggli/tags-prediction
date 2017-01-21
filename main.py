@@ -38,8 +38,7 @@ def generate_training_data(data_iter, tags=False):
 
 data = list()
 # multi-treading nlp generator
-for feature_target in zip(nlp.pipe(texts=generate_training_data(texts, tags=False), n_threads=2, batch_size=5000),
-                      generate_training_data(texts, tags=True)):
-    data.append((pipeline(feature_target[0], settings=TextMining)), feature_target[1])
+for k, (feature, target) in enumerate(zip(generate_training_data(texts, tags=False), generate_training_data(texts, tags=True))):
+    data.append(tuple((pipeline(nlp(feature), settings=TextMining), target)))
 
-print(data[0])
+print(data[0:10])
