@@ -1,14 +1,13 @@
-from helpers import CleansedDataIter, unzip_folder, test
+from helpers import Preprocessor, unzip_folder, test
 from settings import PATHS, PUNC, TextMining
 import spacy
 
 __author__ = 'Ming Li'
 
-df = unzip_folder(PATHS['DATA'])
-
+df = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
 nlp = spacy.load('en')
 
-texts = CleansedDataIter(df[0])
+texts = Preprocessor(df[0])
 
 
 def pos_filter(doc_object, switch=True, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
@@ -36,10 +35,23 @@ def generate_training_data(data_iter, tags=False):
     for row in data_iter:
         yield row[-1] if tags is True else ' '.join(row[1:-1])
 
-data = list()
 # multi-treading nlp generator
-for k, (feature, target) in enumerate(zip(generate_training_data(texts, tags=False), generate_training_data(texts, tags=True))):
-    data.append(tuple((pipeline(nlp(feature), settings=TextMining), target)))
+# data = list()
+# for k, (feature, target) in enumerate(zip(generate_training_data(texts, tags=False), generate_training_data(texts, tags=True))):
+#     print(k)
+#     data.append(tuple((pipeline(nlp(feature), settings=TextMining), target)))
+#     if k == 500:
+#         break
+#
+# for i in data[:10]:
+#     print(i)
 
-print(data[0:10])
+multi_threading_gen = nlp.pipe(texts=generate_training_data(texts, tags=False), batch_size=5000, n_threads=2)
 
+data = [tuple((texts.word_feat(pipeline(feature, settings=TextMining)), target)) for (feature, target) in
+        zip(multi_threading_gen, generate_training_data(texts, tags=True))]
+
+for k, i in enumerate(data):
+    print(i)
+    if k == 10:
+        break

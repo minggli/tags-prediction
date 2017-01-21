@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings('ignore', category=UserWarning)
 
 
-def unzip_folder(path):
+def unzip_folder(path, exclude):
     """read zip files and load uncompressed csv files into a list of panda dataframes"""
 
     zip_files = [f for f in os.listdir(path) if f.endswith('.zip')]
@@ -17,10 +17,13 @@ def unzip_folder(path):
     for i in zip_files:
         zip_obj = zf.ZipFile(file=path + i)
         filename = zip_obj.namelist()[0]
-        print('unzipping {}...'.format(filename))
-        df = pd.read_csv(filepath_or_buffer=zip_obj.open(filename), index_col='id')
-        zip_obj.close()
-        list_dataframes.append(df)
+        if filename in exclude:
+            pass
+        else:
+            print('unzipping {}...'.format(filename))
+            df = pd.read_csv(filepath_or_buffer=zip_obj.open(filename), index_col='id')
+            zip_obj.close()
+            list_dataframes.append(df)
 
     return list_dataframes
 
@@ -44,7 +47,7 @@ def test(test_string='James is travelling to London this Sunday. We are too.'):
     print(doc[0].similarity(doc[6]))
 
 
-class CleansedDataIter(object):
+class Preprocessor(object):
 
     status = {
         True: 'Processed',
@@ -89,3 +92,6 @@ class CleansedDataIter(object):
     def __ge__(self, other):
         return self.__len__() >= other.__len__()
 
+    @staticmethod
+    def word_feat(words):
+        return {word: True for word in words}

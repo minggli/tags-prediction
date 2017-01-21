@@ -1,6 +1,6 @@
-# TODO choose a suitable algorithm to predict tags
+# TODO choose a more robust algorithm to predict tags
 
 from nltk import NaiveBayesClassifier
 
 
-clf = NaiveBayesClassifier.train()
+clf = NaiveBayesClassifier()
