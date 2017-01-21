@@ -42,3 +42,4 @@ for k, (feature, target) in enumerate(zip(generate_training_data(texts, tags=Fal
     data.append(tuple((pipeline(nlp(feature), settings=TextMining), target)))
 
 print(data[0:10])
+
