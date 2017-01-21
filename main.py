@@ -8,6 +8,9 @@ df = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
 nlp = spacy.load('en')
 
 texts = Preprocessor(df[0])
+# test = 'criticality ribosome bind site relative start codon prokaryotic translation prokaryotic translation critical efficient translation location ribosome bind site relative start codon ideally suppose 7b away start base away observable effect translation'
+# test = texts.word_feat(nlp(test))
+# print(test)
 
 
 def pos_filter(doc_object, switch=True, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
