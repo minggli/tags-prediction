@@ -1,7 +1,5 @@
 from helpers import CleansedDataIter, unzip_folder, test
 from settings import PATHS, PUNC
-import pandas as pd
-import numpy as np
 import spacy
 
 __author__ = 'Ming Li'
@@ -12,19 +10,16 @@ nlp = spacy.load('en')
 
 texts = CleansedDataIter(df[0])
 
-for k, i in enumerate(texts):
-    if k == 13195:
-        final = i
-        break
 
-sample = final[1:4]
-
-
-def pos_filter(doc_object, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}
-               , stop_word=False):
+def pos_filter(doc_object, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
     """filter unrelated parts of speech (POS) and return required parts"""
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
-    return nlp(' '.join([str(token) for token in doc_object if token.pos_ in parts and token.is_stop is stop_word]))
+    return nlp(' '.join([str(token) for token in doc_object if token.pos_ in parts]))
+
+
+def stop_word(doc_object, keep=False):
+    assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
+    return nlp(' '.join([str(token) for token in doc_object if token.is_stop is keep]))
 
 
 def lemmatize(doc_object):
@@ -32,23 +27,13 @@ def lemmatize(doc_object):
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token.lemma_) for token in doc_object]))
 
-doc = nlp(' '.join(sample))
 
-combined = pos_filter(lemmatize(doc), stop_word=False)
-
-print(doc)
-print(combined)
-
-
-def generate_training_data(data_iter):
+def generate_training_data(data_iter, tags=False):
     for row in data_iter:
-        yield ' '.join(row[1:4])
+        yield row[-1] if tags is True else ' '.join(row[1:4])
 
-count = 0
-
-for doc in nlp.pipe(texts=generate_training_data(texts), n_threads=3, batch_size=10000):
-    count += 1
-
-print(count)
-
-print(len(texts.data))
+# multi-treading nlp generator
+for count, doc in enumerate(nlp.pipe(texts=generate_training_data(texts, tags=False), n_threads=2, batch_size=5000)):
+    while count < 50:
+        print(doc)
+        break

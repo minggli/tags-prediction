@@ -3,8 +3,6 @@ import os
 import zipfile as zf
 import spacy
 from settings import PUNC
-import numpy as np
-import re
 from bs4 import BeautifulSoup
 import warnings
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -61,13 +59,16 @@ class CleansedDataIter(object):
 
     def _parse(self, input_data):
         """extract texts from html and punctuations"""
-        html_string = BeautifulSoup(input_data, 'html5lib').text
-        string = html_string.lower().translate(str.maketrans('', '', PUNC))
-        return string
+        html_string = BeautifulSoup(input_data, 'html5lib').get_text(strip=True)
+        string = html_string.lower().translate(str.maketrans(PUNC, ' '*len(PUNC)))
+        return ' '.join(string.split())
 
     def process(self):
         print('\npre-precessing texts...', flush=True)
-        self.data = self._df.applymap(lambda x: self._parse(x))
+        source = self._df.copy()
+        source.ix[:, ~source.columns.isin(['tags'])] = \
+            source.ix[:, ~source.columns.isin(['tags'])].applymap(lambda x: self._parse(x))
+        self.data = source
         self.is_processed = True
 
     def __iter__(self):
@@ -87,3 +88,4 @@ class CleansedDataIter(object):
 
     def __ge__(self, other):
         return self.__len__() >= other.__len__()
+
