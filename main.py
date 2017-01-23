@@ -44,7 +44,6 @@ multi_threading_gen = nlp.pipe(texts=generate_training_data(texts, tags=False), 
 data = [tuple((pipeline(feature, settings=TextMining), target)) for (feature, target) in
         zip(multi_threading_gen, generate_training_data(texts, tags=True))]
 
-for k, i in enumerate(data):
-    print(i)
-    if k == 10:
-        break
+with open(PATHS['DATA'] + '/sample.pickle', 'wb') as f:
+    pickle.dump(data, f)
+

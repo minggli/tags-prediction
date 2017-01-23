@@ -62,9 +62,9 @@ class Preprocessor(object):
 
     def _parse(self, input_data):
         """extract texts from html and punctuations"""
-        ascii_string = input_data.encode('utf-8').decode('ascii', 'ignore')
         html_string = BeautifulSoup(input_data, 'html5lib').get_text(strip=True)
-        string = html_string.lower().translate(str.maketrans(PUNC, ' '*len(PUNC)))
+        ascii_string = html_string.encode('utf-8').decode('ascii', 'ignore')
+        string = ascii_string.lower().translate(str.maketrans(PUNC, ' '*len(PUNC)))
         return ' '.join(string.split())
 
     def process(self):
@@ -95,4 +95,4 @@ class Preprocessor(object):
 
     @staticmethod
     def word_feat(words):
-        return {word: True for word in words}
+        return {str(word): True for word in words}
