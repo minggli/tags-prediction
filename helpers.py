@@ -62,6 +62,7 @@ class Preprocessor(object):
 
     def _parse(self, input_data):
         """extract texts from html and punctuations"""
+        ascii_string = input_data.encode('utf-8').decode('ascii', 'ignore')
         html_string = BeautifulSoup(input_data, 'html5lib').get_text(strip=True)
         string = html_string.lower().translate(str.maketrans(PUNC, ' '*len(PUNC)))
         return ' '.join(string.split())
