@@ -96,3 +96,4 @@ class Preprocessor(object):
     @staticmethod
     def word_feat(words):
         return {str(word): True for word in words}
+

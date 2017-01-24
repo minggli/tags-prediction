@@ -9,9 +9,6 @@ df = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
 nlp = spacy.load('en')
 
 texts = Preprocessor(df[0])
-# test = 'criticality ribosome bind site relative start codon prokaryotic translation prokaryotic translation critical efficient translation location ribosome bind site relative start codon ideally suppose 7b away start base away observable effect translation'
-# test = texts.word_feat(nlp(test))
-# print(test)
 
 
 def pos_filter(doc_object, switch=True, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
@@ -41,9 +38,9 @@ def generate_training_data(data_iter, tags=False):
 
 multi_threading_gen = nlp.pipe(texts=generate_training_data(texts, tags=False), batch_size=5000, n_threads=2)
 
-data = [tuple((pipeline(feature, settings=TextMining), target)) for (feature, target) in
+data = [tuple((pipeline(feature, settings=TextMining).text, target)) for (feature, target) in
         zip(multi_threading_gen, generate_training_data(texts, tags=True))]
 
-with open(PATHS['DATA'] + '/sample.pickle', 'wb') as f:
+with open(PATHS['DATA'] + '/cache.pickle', 'wb') as f:
     pickle.dump(data, f)
 

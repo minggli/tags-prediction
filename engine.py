@@ -1,6 +1,10 @@
 # TODO choose a more robust algorithm to predict tags
-
+from settings import PATHS
 from nltk import NaiveBayesClassifier
-from .main import data
+import pickle
 
-clf = NaiveBayesClassifier()
+
+with open(PATHS['DATA'] + '/cache.pickle', 'rb') as f:
+	data = pickle.load(f)
+
+print(data)
