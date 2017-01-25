@@ -47,6 +47,10 @@ def test(test_string='James is travelling to London this Sunday. We are too.'):
     print(doc[0].similarity(doc[6]))
 
 
+def word_feat(words, numeric=True):
+    return additive_dict([(word, True) for word in words]) if numeric else dict([(word, True) for word in words])
+
+
 class Preprocessor(object):
 
     status = {
@@ -92,4 +96,21 @@ class Preprocessor(object):
 
     def __ge__(self, other):
         return self.__len__() >= other.__len__()
+
+
+class additive_dict(dict):
+
+    def __init__(self, iterable=None):
+        if not iterable:
+            pass
+        else:
+            assert hasattr(iterable, '__iter__')
+            for i in iterable:
+                self.__setitem__(i[0], 0)
+
+    def __missing__(self, key):
+        return 0
+
+    def __setitem__(self, key, value):
+        super().__setitem__(key, self.__getitem__(key) + 1)
 

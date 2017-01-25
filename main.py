@@ -7,7 +7,7 @@ __author__ = 'Ming Li'
 
 df = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
 nlp = spacy.load('en')
-
+dict()
 texts = Preprocessor(df[0])
 
 
