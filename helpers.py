@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings('ignore', category=UserWarning)
 
 
-def unzip_folder(path, exclude):
+def unzip_folder(path, exclude=None):
     """read zip files and load uncompressed csv files into a list of panda dataframes"""
 
     zip_files = [f for f in os.listdir(path) if f.endswith('.zip')]
@@ -17,7 +17,7 @@ def unzip_folder(path, exclude):
     for i in zip_files:
         zip_obj = zf.ZipFile(file=path + i)
         filename = zip_obj.namelist()[0]
-        if filename in exclude:
+        if exclude and filename in exclude:
             pass
         else:
             print('unzipping {}...'.format(filename))
@@ -92,8 +92,4 @@ class Preprocessor(object):
 
     def __ge__(self, other):
         return self.__len__() >= other.__len__()
-
-    @staticmethod
-    def word_feat(words):
-        return {str(word): True for word in words}
 
