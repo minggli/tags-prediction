@@ -1,16 +1,15 @@
 from helpers import Preprocessor, unzip_folder, test
-from settings import PATHS, PUNC, TextMining
+from settings import PATHS, PUNC, TextMining, train_files
 import spacy
 import pandas as pd
 import pickle
+import sys
 
 __author__ = 'Ming Li'
 
-list_of_dataframes = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
-df = pd.concat(objs=list_of_dataframes, ignore_index=True)
-texts = Preprocessor(df)
+TRAIN = True if 'TRAIN' in map(str.upper, sys.argv[1:]) else False
+TEST = True if 'TEST' in map(str.upper, sys.argv[1:]) else False
 
-nlp = spacy.load('en')
 
 def pos_filter(doc_object, switch=True, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
     """filter unrelated parts of speech (POS) and return required parts"""
@@ -37,10 +36,34 @@ def generate_training_data(data_iter, tags=False):
     for row in data_iter:
         yield row[-1] if tags is True else ' '.join(row[1:-1])
 
-multi_threading_gen = nlp.pipe(texts=generate_training_data(texts, tags=False), batch_size=5000, n_threads=2)
 
-data = [tuple((pipeline(feature, settings=TextMining).text, target)) for (feature, target) in
-        zip(multi_threading_gen, generate_training_data(texts, tags=True))]
+def nlp_processing(iterator, settings):
+    multi_threading_gen = nlp.pipe(texts=generate_training_data(iterator, tags=False), batch_size=5000, n_threads=2)
+    feature_tag_pairs = [tuple((pipeline(feature, settings=settings).text, target)) for (feature, target) in
+            zip(multi_threading_gen, generate_training_data(iterator, tags=True))]
+    return feature_tag_pairs
 
-with open(PATHS['DATA'] + '/complete_cache.pickle', 'wb') as f:
-    pickle.dump(data, f)
+
+if __name__ == '__main__':
+
+    nlp = spacy.load('en')
+
+    if TRAIN:
+
+        list_of_dataframes = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
+        df = pd.concat(objs=list_of_dataframes, ignore_index=True)
+        train_texts = Preprocessor(df)
+
+        data = nlp_processing(iterator=train_texts, settings=TextMining)
+
+        with open(PATHS['DATA'] + '/complete_cache.pickle', 'wb') as f:
+            pickle.dump(data, f)
+
+    if TEST:
+
+        test = unzip_folder(PATHS['DATA'], exclude=train_files + ['sample_submission.csv'])[0]
+        test_texts = Preprocessor(test)
+        data = nlp_processing(iterator=test_texts, settings=TextMining)
+
+        with open(PATHS['DATA'] + '/test_cache.pickle', 'wb') as f:
+            pickle.dump(data, f)
