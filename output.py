@@ -1,8 +1,10 @@
 from helpers import Preprocessor, unzip_folder
 from settings import PATHS, PUNC, TextMining, TrainFiles, Boundary
-from engine import clf, classify, nb_test
+from engine import classify, nb_test, train
 
 def generate_submission():
+
+	clf = train()
 
 	test = unzip_folder(PATHS['DATA'], exclude=TrainFiles + ['sample_submission.csv'])[0]
 

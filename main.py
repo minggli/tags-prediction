@@ -70,5 +70,6 @@ if __name__ == '__main__':
             pickle.dump(data, f)
 
     if YIELD:
+        train()
         generate_submission()
 

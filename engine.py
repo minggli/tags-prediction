@@ -14,13 +14,13 @@ with open(PATHS['DATA'] + '/test_cache.pickle', 'rb') as f:
 # TODO trying latent Dirichlet Allocation (LDA)
 
 # first attempt Navie Bayes
-
-n = int(2e1)
-print('preparing Navie Bayes training data...')
-nb_train = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data[:n])])
-print('training Naive Bayes classifer...', flush=False, end='')
-clf = NaiveBayesClassifier.train(nb_train)
-print('done')
+def train():
+	print('preparing Navie Bayes training data...')
+	nb_train = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data[:n])])
+	print('training Naive Bayes classifer...', flush=False, end='')
+	clf = NaiveBayesClassifier.train(nb_train)
+	print('done')
+	return trained_classifier
 
 nb_test = np.array([i for i in map(lambda x: word_feat(x[0].split(), numeric=True), test)])
 
