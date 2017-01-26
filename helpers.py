@@ -112,5 +112,5 @@ class additive_dict(dict):
         return 0
 
     def __setitem__(self, key, value):
-        super().__setitem__(key, self.__getitem__(key) + 1)
+        super(additive_dict, self).__setitem__(key, self.__getitem__(key) + 1)
 

@@ -1,15 +1,16 @@
 from helpers import Preprocessor, unzip_folder, test
 from settings import PATHS, PUNC, TextMining
 import spacy
+import pandas as pd
 import pickle
 
 __author__ = 'Ming Li'
 
-df = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
-nlp = spacy.load('en')
-dict()
-texts = Preprocessor(df[0])
+list_of_dataframes = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
+df = pd.concat(objs=list_of_dataframes, ignore_index=True)
+texts = Preprocessor(df)
 
+nlp = spacy.load('en')
 
 def pos_filter(doc_object, switch=True, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
     """filter unrelated parts of speech (POS) and return required parts"""
@@ -41,6 +42,5 @@ multi_threading_gen = nlp.pipe(texts=generate_training_data(texts, tags=False), 
 data = [tuple((pipeline(feature, settings=TextMining).text, target)) for (feature, target) in
         zip(multi_threading_gen, generate_training_data(texts, tags=True))]
 
-with open(PATHS['DATA'] + '/cache.pickle', 'wb') as f:
+with open(PATHS['DATA'] + '/complete_cache.pickle', 'wb') as f:
     pickle.dump(data, f)
-
