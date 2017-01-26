@@ -1,14 +1,20 @@
+from helpers import Preprocessor, unzip_folder
+from settings import PATHS, PUNC, TextMining, TrainFiles, Boundary
 from engine import clf, classify, nb_test
-from helpers import Preprocessor, unzip_folder, test
-from settings import PATHS, PUNC, TextMining
-import spacy
-import pickle
 
+def generate_submission():
 
+	test = unzip_folder(PATHS['DATA'], exclude=TrainFiles + ['sample_submission.csv'])[0]
 
-test = unzip_folder(PATHS['DATA'], exclude=train_files + ['sample_submission.csv'])[0]
-print(test)
+	tags = list()
 
-texts = Preprocessor(test)
+	for i in range(len(nb_test)):
+		temp = classify(clf=clf, word_features=nb_test[i], decision_boundary=Boundary)
+		temp.insert(0, 'physics')
+		temp = ' '.join(temp)
+		tags.append(temp)
 
-clf.prob_classify()
+	test['tags'] = tags
+
+	output_df = test['tags'].copy()
+	output_df.to_csv(path='submission.csv', header=True, index=True, encoding='utf8')

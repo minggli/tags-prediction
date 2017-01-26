@@ -1,5 +1,6 @@
 from helpers import Preprocessor, unzip_folder, test
-from settings import PATHS, PUNC, TextMining, train_files
+from settings import PATHS, PUNC, TextMining, TrainFiles
+from output import generate_submission
 import spacy
 import pandas as pd
 import pickle
@@ -9,7 +10,7 @@ __author__ = 'Ming Li'
 
 TRAIN = True if 'TRAIN' in map(str.upper, sys.argv[1:]) else False
 TEST = True if 'TEST' in map(str.upper, sys.argv[1:]) else False
-
+YIELD = True if 'YIELD' in map(str.upper, sys.argv[1:]) else False
 
 def pos_filter(doc_object, switch=True, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
     """filter unrelated parts of speech (POS) and return required parts"""
@@ -61,9 +62,13 @@ if __name__ == '__main__':
 
     if TEST:
 
-        test = unzip_folder(PATHS['DATA'], exclude=train_files + ['sample_submission.csv'])[0]
+        test = unzip_folder(PATHS['DATA'], exclude=TrainFiles + ['sample_submission.csv'])[0]
         test_texts = Preprocessor(test)
         data = nlp_processing(iterator=test_texts, settings=TextMining)
 
         with open(PATHS['DATA'] + '/test_cache.pickle', 'wb') as f:
             pickle.dump(data, f)
+
+    if YIELD:
+        generate_submission()
+
