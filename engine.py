@@ -11,15 +11,28 @@ with open(PATHS['DATA'] + '/complete_cache.pickle', 'rb') as f:
 
 with open(PATHS['DATA'] + '/test_cache.pickle', 'rb') as f:
 	test = pickle.load(f)
+
 # TODO trying latent Dirichlet Allocation (LDA)
 
 # first attempt Navie Bayes
-def train():
+
+def nb_data():
+	
 	print('preparing Navie Bayes training data...')
 	nb_train = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data)])
+
+    with open(PATHS['DATA'] + '/nb_cache.pickle', 'wb') as f:
+        pickle.dump(nb_train, f)
+
+def train():
+
+    with open(PATHS['DATA'] + '/nb_cache.pickle', 'rb') as f:
+        nb_train = pickle.load(f)
+
 	print('training Naive Bayes classifer...', flush=False, end='')
 	clf = NaiveBayesClassifier.train(nb_train)
 	print('done')
+
 	return trained_classifier
 
 nb_test = np.array([i for i in map(lambda x: word_feat(x[0].split(), numeric=True), test)])

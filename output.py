@@ -1,8 +1,12 @@
 from helpers import Preprocessor, unzip_folder
 from settings import PATHS, PUNC, TextMining, TrainFiles, Boundary
-from engine import classify, nb_test, train
+from engine import classify, nb_test, train, nb_data
+import os.path
 
 def generate_submission():
+
+	if not os.path.exists(PATHS['DATA'] + '/nb_cache.pickle'):
+		nb_data()
 
 	clf = train()
 
