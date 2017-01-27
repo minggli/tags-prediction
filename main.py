@@ -1,6 +1,6 @@
 from helpers import Preprocessor, unzip_folder, test
 from settings import PATHS, PUNC, TextMining, TrainFiles
-from output import generate_submission
+
 import spacy
 import pandas as pd
 import pickle
@@ -50,7 +50,6 @@ if __name__ == '__main__':
     nlp = spacy.load('en')
 
     if TRAIN:
-
         list_of_dataframes = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
         df = pd.concat(objs=list_of_dataframes, ignore_index=True)
         train_texts = Preprocessor(df)
@@ -61,7 +60,6 @@ if __name__ == '__main__':
             pickle.dump(data, f)
 
     if TEST:
-
         test = unzip_folder(PATHS['DATA'], exclude=TrainFiles + ['sample_submission.csv'])[0]
         test_texts = Preprocessor(test)
         data = nlp_processing(iterator=test_texts, settings=TextMining)
@@ -70,5 +68,6 @@ if __name__ == '__main__':
             pickle.dump(data, f)
 
     if YIELD:
+        from output import generate_submission
         generate_submission()
 
