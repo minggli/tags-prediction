@@ -33,7 +33,7 @@ def batch_iterator(np_data, batch_size=10000):
 
 def nb_data():
 
-	print('preparing Navie Bayes training data...')
+	print('preparing Navie Bayes training data...', end='')
 
 	# iterator = batch_iterator(np_data=data, batch_size=10000)
 
@@ -59,12 +59,13 @@ def train():
 	
 	nb_train = nb_data()
 
-	print('training Naive Bayes classifer...', flush=True, end='\n')
+	print('training Naive Bayes classifer...', flush=True, end='')
 	clf = NaiveBayesClassifier.train(nb_train)
 	print('done')
 
 	return clf
 
+# nb_test = apply_features(lambda x: word_feat(x[0].split(), numeric=True), test, labeled=True)
 nb_test = np.array([i for i in map(lambda x: word_feat(x[0].split(), numeric=True), test)])
 
 

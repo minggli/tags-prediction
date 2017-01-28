@@ -4,9 +4,9 @@ PATHS = {
 
 PUNC = r"""!"#$%&'()*+,./:;<=>?@[\]^_`{|}~-"""
 
-TextMining = {'pos': True, 'stop': True, 'lemma': True}
+TextMining = {'pos': False, 'stop': True, 'lemma': True}
 
 TrainFiles = ['biology.csv', 'cooking.csv', 'crypto.csv', 'diy.csv', 'robotics.csv', 'travel.csv']
 
-Boundary = .5
+Boundary = 0.0005
 Limit = 5
