@@ -40,12 +40,13 @@ def generate_training_data(data_iter, tags=False):
 
 def nlp_processing(iterator, settings):
     multi_threading_gen = nlp.pipe(texts=generate_training_data(iterator, tags=False), batch_size=5000, n_threads=2)
-    feature_tag_pairs = [tuple((pipeline(feature, settings=settings).text, target)) for (feature, target) in
+    feature_tag_pairs = [tuple((pipeline(feature, settings=settings).text, label)) for (feature, label) in
             zip(multi_threading_gen, generate_training_data(iterator, tags=True))]
     return feature_tag_pairs
 
 
 if __name__ == '__main__':
+
 
     if TRAIN:
         nlp = spacy.load('en')
