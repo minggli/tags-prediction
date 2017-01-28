@@ -5,9 +5,6 @@ import os.path
 
 def generate_submission():
 
-	if not os.path.exists(PATHS['DATA'] + '/nb_cache.pickle'):
-		nb_data()
-
 	clf = train()
 
 	test = unzip_folder(PATHS['DATA'], exclude=TrainFiles + ['sample_submission.csv'])[0]
@@ -17,7 +14,7 @@ def generate_submission():
 	n = len(nb_test)
 
 	for i in range(n):
-		temp = classify(clf=clf, word_features=nb_test[i], decision_boundary=Boundary, Limit=Limit)
+		temp = classify(clf=clf, word_features=nb_test[i], decision_boundary=Boundary, limit=Limit)
 		temp.insert(0, 'physics')
 		temp = ' '.join(temp)
 		tags.append(temp)

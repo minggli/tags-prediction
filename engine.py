@@ -35,8 +35,6 @@ def nb_data():
 
 	print('preparing Navie Bayes training data...')
 
-	nb_train = None
-
 	# iterator = batch_iterator(np_data=data, batch_size=10000)
 
 	# for n, k, data_slice in iterator:
@@ -51,15 +49,15 @@ def nb_data():
 	nb_train = apply_features(lambda x: word_feat(x[0].split(), numeric=True), data, labeled=True)
 
 	# nb_train = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data)])
-	with open(PATHS['DATA'] + '/nb_cache.pickle', 'wb') as f:
-		pickle.dump(nb_train, f)
+	# with open(PATHS['DATA'] + '/nb_cache.pickle', 'wb') as f:
+	# 	pickle.dump(nb_train, f)
 	print('done...total of {0} prepared...'.format(len(nb_train)))
+	return nb_train
 
 
 def train():
 	
-	with open(PATHS['DATA'] + '/nb_cache.pickle', 'rb') as f:
-		nb_train = pickle.load(f)
+	nb_train = nb_data()
 
 	print('training Naive Bayes classifer...', flush=True, end='\n')
 	clf = NaiveBayesClassifier.train(nb_train)
