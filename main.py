@@ -47,9 +47,8 @@ def nlp_processing(iterator, settings):
 
 if __name__ == '__main__':
 
-    nlp = spacy.load('en')
-
     if TRAIN:
+        nlp = spacy.load('en')
         list_of_dataframes = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
         df = pd.concat(objs=list_of_dataframes, ignore_index=True)
         train_texts = Preprocessor(df)
@@ -60,6 +59,7 @@ if __name__ == '__main__':
             pickle.dump(data, f)
 
     if TEST:
+        nlp = spacy.load('en')
         test = unzip_folder(PATHS['DATA'], exclude=TrainFiles + ['sample_submission.csv'])[0]
         test_texts = Preprocessor(test)
         data = nlp_processing(iterator=test_texts, settings=TextMining)
