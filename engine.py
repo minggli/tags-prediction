@@ -1,6 +1,7 @@
 from settings import PATHS
 from helpers import word_feat
 from nltk import NaiveBayesClassifier
+from nltk.classify import apply_features
 import pickle
 import numpy as np
 from gensim import models, corpora
@@ -36,16 +37,18 @@ def nb_data():
 
 	nb_train = None
 
-	iterator = batch_iterator(np_data=data, batch_size=10000)
+	# iterator = batch_iterator(np_data=data, batch_size=10000)
 
-	for n, k, data_slice in iterator:
-		increment = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data_slice)])
-		if k > 0:
-			nb_train = np.concatenate((nb_train, increment), axis=0)
-		else:
-			nb_train = increment
+	# for n, k, data_slice in iterator:
+	# 	increment = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data_slice)])
+	# 	if k > 0:
+	# 		nb_train = np.concatenate((nb_train, increment), axis=0)
+	# 	else:
+	# 		nb_train = increment
 
-		print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n')
+	# 	print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n')
+
+	nb_train = apply_features(lambda x: word_feat(x[0].split(), numeric=True), data, labeled=True)
 
 	# nb_train = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data)])
 	with open(PATHS['DATA'] + '/nb_cache.pickle', 'wb') as f:
@@ -57,16 +60,6 @@ def train():
 	
 	with open(PATHS['DATA'] + '/nb_cache.pickle', 'rb') as f:
 		nb_train = pickle.load(f)
-
-	iterator = batch_iterator(np_data=nb_train, batch_size=10000)
-
-	def nb_train_gen():
-		for k, v, data_slice in iterator:
-			print('loading {} of {}...'.format(v + 1, k))
-			for i in data_slice:
-				yield i
-
-	nb_train = nb_train_gen()
 
 	print('training Naive Bayes classifer...', flush=True, end='\n')
 	clf = NaiveBayesClassifier.train(nb_train)
