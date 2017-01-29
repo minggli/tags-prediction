@@ -48,7 +48,7 @@ def test(test_string='James is travelling to London this Sunday. We are too.'):
 
 
 def word_feat(words, numeric=True):
-    return additive_dict([(word, True) for word in words]) if numeric else dict([(word, True) for word in words])
+    return AdditiveDict([(word, True) for word in words]) if numeric else dict([(word, True) for word in words])
 
 
 class Preprocessor(object):
@@ -98,7 +98,7 @@ class Preprocessor(object):
         return self.__len__() >= other.__len__()
 
 
-class additive_dict(dict):
+class AdditiveDict(dict):
 
     def __init__(self, iterable=None):
         if not iterable:
@@ -112,5 +112,5 @@ class additive_dict(dict):
         return 0
 
     def __setitem__(self, key, value):
-        super(additive_dict, self).__setitem__(key, self.__getitem__(key) + 1)
+        super(AdditiveDict, self).__setitem__(key, self.__getitem__(key) + 1)
 
