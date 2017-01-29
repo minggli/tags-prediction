@@ -31,29 +31,28 @@ def batch_iterator(np_data, batch_size=10000):
 		else:
 			yield num_batches, each_batch, np_data[start_index: stop_index]
 
+
 def nb_data():
 
-	print('preparing Navie Bayes training data...', end='')
+	print('preparing Navie Bayes training data...')
 
-	# iterator = batch_iterator(np_data=data, batch_size=10000)
+	iterator = batch_iterator(np_data=np.array(data), batch_size=10000)
+	func = lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1].split()))
 
-	# for n, k, data_slice in iterator:
-	# 	increment = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data_slice)])
-	# 	if k > 0:
-	# 		nb_train = np.concatenate((nb_train, increment), axis=0)
-	# 	else:
-	# 		nb_train = increment
+	for n, k, data_slice in iterator:
+		increment = np.random.permutation([i for i in map(func, data_slice)])
+		if k > 0:
+			nb_train = np.concatenate((nb_train, increment), axis=0)
+		else:
+			nb_train = increment
 
-	# 	print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n')
+		print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n')
 
-	nb_train = apply_features(lambda x: word_feat(x[0].split(), numeric=True), data, labeled=True)
-
-	# nb_train = np.random.permutation([i for i in map(lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1])), data)])
-	# with open(PATHS['DATA'] + '/nb_cache.pickle', 'wb') as f:
-	# 	pickle.dump(nb_train, f)
 	print('done...total of {0} prepared...'.format(len(nb_train)))
+
 	return nb_train
 
+print(nb_data()[:10])
 
 def train():
 	
