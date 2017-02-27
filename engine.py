@@ -2,6 +2,9 @@ from settings import PATHS
 from helpers import word_feat
 from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
 import pickle
+import os
+import sys
+sys.setrecursionlimit(30000)
 import numpy as np
 
 
@@ -39,28 +42,43 @@ def nb_data():
 		else:
 			train = increment
 
-		print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n')
+		print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n', flush=True)
 
-	print('done...total of {0} prepared...'.format(len(train)))
+	print('done...total of {0} prepared...'.format(len(train)), flush=True)
 
 	return train
 
-corpus = nb_data()
+# corpus = nb_data()
 
-corpus[:10]
+# tf = TfidfVectorizer(
+# 	input='content',
+# 	encoding='utf-8',
+# 	ngram_range=(1, 1),
+# 	strip_accents='ascii',
+# 	analyzer='word',
+# 	stop_words='english'
+# 	)
 
-tf = TfidfVectorizer(
-	input='content',
-	encoding='utf-8',
-	ngram_range=(1, 3),
-	strip_accents='ascii',
-	analyzer='word',
-	stop_words='english'
-	)
+# tf.fit(corpus)
 
-tf_idf_matrix = tf.fit_transform(corpus)
+# feature_names = tf.get_feature_names()
 
-feature_names = tf.get_feature_names()
+if not os.path.exists(PATHS['DATA'] + '/tf_idf_matrix.pickle'):
 
-print(np.random.permutations(feature_names)[:10])
+	tf_idf_matrix = tf.transform(corpus)
+
+	tf_idf_matrix_transformed = TfidfTransformer().fit_transform(tf_idf_matrix)
+
+	with open(PATHS['DATA'] + '/tf_idf_matrix.pickle', 'wb') as f:
+		pickle.dump(tf_idf_matrix_transformed, f)
+
+else:
+
+	with open(PATHS['DATA'] + '/tf_idf_matrix.pickle', 'rb') as f:
+		tf_idf_matrix_transformed = pickle.load(f)
+
+densed_document = tf_idf_matrix_transformed.todense()[0].tolist()[0]
+phrase_scores = [pair for pair in zip(range(0, len(densed_document)), densed_document) if pair[1] > 0]
+sorted_phrase_scores = sorted(phrase_scores, key=lambda x: x[1], reverse=True)
+print(sorted_phrase_scores)
 
