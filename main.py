@@ -12,6 +12,7 @@ TRAIN = True if 'TRAIN' in map(str.upper, sys.argv[1:]) else False
 TEST = True if 'TEST' in map(str.upper, sys.argv[1:]) else False
 YIELD = True if 'YIELD' in map(str.upper, sys.argv[1:]) else False
 
+
 def pos_filter(
     doc_object,
     switch=True, 
@@ -75,4 +76,3 @@ if __name__ == '__main__':
     if YIELD:
         from output import generate_submission
         generate_submission()
-
