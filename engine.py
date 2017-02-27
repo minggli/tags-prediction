@@ -3,7 +3,6 @@ from helpers import word_feat
 from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
 import pickle
 import numpy as np
-from gensim import models, corpora
 
 
 with open(PATHS['DATA'] + '/complete_cache.pickle', 'rb') as f:
@@ -30,22 +29,38 @@ def batch_iterator(np_data, batch_size=10000):
 
 def nb_data():
 
-	print('preparing Navie Bayes training data...')
-
 	iterator = batch_iterator(np_data=np.array(data), batch_size=10000)
-	func = lambda x: tuple((word_feat(x[0].split(), numeric=True), x[1].split()))
+	func = lambda x: x[0]
 
 	for n, k, data_slice in iterator:
 		increment = np.random.permutation([i for i in map(func, data_slice)])
 		if k > 0:
-			nb_train = np.concatenate((nb_train, increment), axis=0)
+			train = np.concatenate((train, increment), axis=0)
 		else:
-			nb_train = increment
+			train = increment
 
 		print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n')
 
-	print('done...total of {0} prepared...'.format(len(nb_train)))
+	print('done...total of {0} prepared...'.format(len(train)))
 
-	return nb_train
+	return train
 
-print(nb_data()[:10])
+corpus = nb_data()
+
+corpus[:10]
+
+tf = TfidfVectorizer(
+	input='content',
+	encoding='utf-8',
+	ngram_range=(1, 3),
+	strip_accents='ascii',
+	analyzer='word',
+	stop_words='english'
+	)
+
+tf_idf_matrix = tf.fit_transform(corpus)
+
+feature_names = tf.get_feature_names()
+
+print(np.random.permutations(feature_names)[:10])
+
