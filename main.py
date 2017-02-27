@@ -12,15 +12,19 @@ TRAIN = True if 'TRAIN' in map(str.upper, sys.argv[1:]) else False
 TEST = True if 'TEST' in map(str.upper, sys.argv[1:]) else False
 YIELD = True if 'YIELD' in map(str.upper, sys.argv[1:]) else False
 
-def pos_filter(doc_object, switch=True, parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}):
+def pos_filter(
+    doc_object,
+    switch=True, 
+    parts={'ADJ', 'DET', 'ADV', 'SPACE', 'CONJ', 'PRON', 'ADP', 'VERB', 'NOUN', 'PART'}
+    ):
     """filter unrelated parts of speech (POS) and return required parts"""
     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
     return nlp(' '.join([str(token) for token in doc_object if token.pos_ in parts])) if switch else doc_object
 
 
-def stop_word(doc_object, switch=True):
-    assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
-    return nlp(' '.join([str(token) for token in doc_object if token.is_stop is False])) if switch else doc_object
+# def stop_word(doc_object, switch=True):
+#     assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
+#     return nlp(' '.join([str(token) for token in doc_object if token.is_stop is False])) if switch else doc_object
 
 
 def lemmatize(doc_object, switch=True):
@@ -29,8 +33,8 @@ def lemmatize(doc_object, switch=True):
     return nlp(' '.join([str(token.lemma_) for token in doc_object])) if switch else doc_object
 
 
-def pipeline(doc_object, settings={'pos': True, 'stop': True, 'lemma': True}):
-    return lemmatize(stop_word(pos_filter(doc_object, switch=settings['pos']), switch=settings['stop']), switch=settings['lemma'])
+def pipeline(doc_object, settings={'pos': True, 'lemma': True}):
+    return lemmatize(pos_filter(doc_object, switch=settings['pos']), switch=settings['lemma'])
 
 
 def generate_training_data(data_iter, tags=False):
