@@ -24,3 +24,4 @@ def generate_submission():
 	test['tags'] = tags
 	output_df = test['tags'].copy()
 	output_df.to_csv(path='submission.csv', header=True, index=True, encoding='utf8')
+
