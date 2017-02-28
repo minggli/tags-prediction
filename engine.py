@@ -10,7 +10,6 @@ from nltk.classify import NaiveBayesClassifier
 from nltk.tokenize import word_tokenize
 import numpy as np
 import pickle
-import pandas as pd
 import os
 import sys
 sys.setrecursionlimit(30000)
@@ -89,25 +88,25 @@ tf_trans = TfidfTransformer()
 
 tf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
 
-# tf.fit_transform(test_features)
-tf.fit_transform(train_features)
+test_word_feats = tf.fit_transform(test_features)
+train_word_feats = tf.fit_transform(train_features)
 
-labels = [phase for multilabel in train_labels for phase in multilabel]
+binarizer = MultiLabelBinarizer(sparse_output=False).fit(train_labels)
+labels_classes = binarizer.classes_
+onehot_encoded_labels = binarizer.transform(train_labels)
 
-a = list(tf)
-print(len(a))
+vectorized_train = list(train_word_feats)
 
 dv = DictVectorizer(sparse=False)
-dv.fit(a)
-a = dv.transform(a)
-
-# labels = pd.Series(data=train_labels, name='tags')
-binarizer = MultiLabelBinarizer(sparse_output=False).fit(train_labels)
-onehot_labels = binarizer.transform(train_labels)
-classes = binarizer.classes_
-# print(binarizer.classes_[585], binarizer.classes_[49], binarizer.classes_[610], binarizer.classes_[518])
+dv.fit(vectorized_train)
+vectorized_train = dv.transform(vectorized_train)
 
 OvR = OneVsRestClassifier(MultinomialNB())
-OvR.fit(a, onehot_labels)
+OvR.fit(vectorized_train, onehot_encoded_labels)
+print(OvR.multilabel_)
 
+vectorized_test = list(test_word_feats)
+vectorized_test = dv.transform(vectorized_test)
+# Named features not encountered during fit or fit_transform will be silently ignored.
 
+OvR.predict(vectorized_test)
