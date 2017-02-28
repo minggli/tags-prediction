@@ -1,11 +1,16 @@
 from settings import PATHS, LIMIT
 from helpers import word_feat
 from tf_idf import TF_IDF
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
+from sklearn.feature_extraction import DictVectorizer
 from nltk.classify import NaiveBayesClassifier
 from nltk.tokenize import word_tokenize
 import numpy as np
 import pickle
+import pandas as pd
 import os
 import sys
 sys.setrecursionlimit(30000)
@@ -84,10 +89,25 @@ tf_trans = TfidfTransformer()
 
 tf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
 
-tf.fit_transform(test_features)
-
+# tf.fit_transform(test_features)
 tf.fit_transform(train_features)
 
-for i, rows in enumerate(tf):
-	print(rows, train_labels[i])
-	break
+labels = [phase for multilabel in train_labels for phase in multilabel]
+
+a = list(tf)
+print(len(a))
+
+dv = DictVectorizer(sparse=False)
+dv.fit(a)
+a = dv.transform(a)
+
+# labels = pd.Series(data=train_labels, name='tags')
+binarizer = MultiLabelBinarizer(sparse_output=False).fit(train_labels)
+onehot_labels = binarizer.transform(train_labels)
+classes = binarizer.classes_
+# print(binarizer.classes_[585], binarizer.classes_[49], binarizer.classes_[610], binarizer.classes_[518])
+
+OvR = OneVsRestClassifier(MultinomialNB())
+OvR.fit(a, onehot_labels)
+
+
