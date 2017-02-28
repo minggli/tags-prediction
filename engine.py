@@ -1,6 +1,9 @@
 from settings import PATHS
 from helpers import word_feat
 from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
+from nltk.classify import NaiveBayesClassifier
+from nltk.tokenize import word_tokenize
+
 import pickle
 import os
 import sys
@@ -12,7 +15,11 @@ with open(PATHS['DATA'] + '/complete_cache.pickle', 'rb') as f:
 	data = pickle.load(f)
 
 with open(PATHS['DATA'] + '/test_cache.pickle', 'rb') as f:
-	test = pickle.load(f)
+	test_data = pickle.load(f)
+
+
+def word_feat(words):
+	return dict([(word, True) for word in words])
 
 
 def batch_iterator(np_data, batch_size=10000):
@@ -33,26 +40,30 @@ def batch_iterator(np_data, batch_size=10000):
 def nb_data():
 
 	iterator = batch_iterator(np_data=np.array(data), batch_size=10000)
-	func = lambda x: x[0] + ' ' + x[1]
+	func = lambda x: x[0]
+	func_y = lambda x: x[1]
 
 	for n, k, data_slice in iterator:
 		increment = np.array([i for i in map(func, data_slice)])
+		increment_y = np.array([i for i in map(func_y, data_slice)])
 		if k > 0:
 			train = np.concatenate((train, increment), axis=0)
+			train_y = np.concatenate((train_y, increment_y), axis=0)
 		else:
 			train = increment
+			train_y = increment_y
 
 		print('completed preparing {0} of {1}...'.format(k + 1, n), end='\n', flush=True)
 
 	print('done...total of {0} prepared...'.format(len(train)), flush=True)
 
-	return train
+	return train, train_y
 
 
 def nb_test_data():
 
-	iterator = batch_iterator(np_data=np.array(test), batch_size=10000)
-	func = lambda x: x[0]
+	iterator = batch_iterator(np_data=np.array(test_data), batch_size=10000)
+	func = lambda x: x[1]
 
 	for n, k, data_slice in iterator:
 		increment = np.array([i for i in map(func, data_slice)])
@@ -68,48 +79,51 @@ def nb_test_data():
 	return test
 
 
+# if os.path.exists(PATHS['DATA'] + '/tf_idf_matrix.pickle'):
 
-if not os.path.exists(PATHS['DATA'] + '/tf_idf_matrix.pickle'):
+corpus, labels = nb_data()
+# nb_test = nb_test_data()
+# corpus = np.concatenate((corpus, nb_test), axis=0)
 
-	corpus = nb_data()
-	nb_test = nb_test_data()
-	# corpus = np.concatenate((corpus, nb_test), axis=0)
+tf = TfidfVectorizer(
+	input='content',
+	encoding='utf-8',
+	ngram_range=(1, 1),
+	strip_accents='ascii',
+	analyzer='word',
+	stop_words='english')
 
-	tf = TfidfVectorizer(
-		input='content',
-		encoding='utf-8',
-		ngram_range=(1, 1),
-		strip_accents='ascii',
-		analyzer='word',
-		stop_words='english')
+tf.fit(corpus)
 
-	tf.fit(corpus)
+feature_names = tf.get_feature_names()
 
-	feature_names = tf.get_feature_names()
+tf_idf_matrix = tf.transform(corpus)
 
-	tf_idf_matrix = tf.transform(nb_test)
+tf_idf_matrix_transformed = TfidfTransformer().fit_transform(tf_idf_matrix)
 
-	tf_idf_matrix_transformed = TfidfTransformer().fit_transform(tf_idf_matrix)
+# 	with open(PATHS['DATA'] + '/tf_idf_matrix.pickle', 'wb') as f:
+# 		pickle.dump(tf_idf_matrix_transformed, f)
 
-	with open(PATHS['DATA'] + '/tf_idf_matrix.pickle', 'wb') as f:
-		pickle.dump(tf_idf_matrix_transformed, f)
+# 	with open(PATHS['DATA'] + '/word_feats.pickle', 'wb') as f:
+# 		pickle.dump(feature_names, f)
 
-	with open(PATHS['DATA'] + '/word_feats.pickle', 'wb') as f:
-		pickle.dump(feature_names, f)
+# else:
 
-else:
+# 	with open(PATHS['DATA'] + '/tf_idf_matrix.pickle', 'rb') as f:
+# 		tf_idf_matrix_transformed = pickle.load(f)
 
-	with open(PATHS['DATA'] + '/tf_idf_matrix.pickle', 'rb') as f:
-		tf_idf_matrix_transformed = pickle.load(f)
+# 	with open(PATHS['DATA'] + '/word_feats.pickle', 'rb') as f:
+# 		feature_names = pickle.load(f)
 
-	with open(PATHS['DATA'] + '/word_feats.pickle', 'rb') as f:
-		feature_names = pickle.load(f)
+new_train_set = list()
 
-densed_documents = tf_idf_matrix_transformed.todense()
-densed_document = densed_documents[1002].tolist()[0]
-phrase_scores = [pair for pair in zip(range(0, len(densed_document)), densed_document) if pair[1] > 0]
-sorted_phrase_scores = sorted(phrase_scores, key=lambda x: x[1], reverse=True)
-named_scores = [(feature_names[pair[0]], pair[1]) for pair in sorted_phrase_scores]
+for doc in range(len(densed_documents)):
+	densed_documents = tf_idf_matrix_transformed.todense()
+	densed_document = densed_documents[doc].tolist()[0]
+	phrase_scores = [pair for pair in zip(range(0, len(densed_document)), densed_document) if pair[1] > 0]
+	sorted_phrase_scores = sorted(phrase_scores, key=lambda x: x[1], reverse=True)
+	named_scores = [feature_names[pair[0]] for pair in sorted_phrase_scores][:10]
+	[tuple((word_feats(named_scores), labels[doc].split(' ')))]
 
 for word, score in named_scores:
 	print('{0: <20} {1}'.format(word, score))
