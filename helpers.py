@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
 import os
 import zipfile as zf
 import spacy
@@ -6,6 +7,16 @@ from settings import PUNC
 from bs4 import BeautifulSoup
 import warnings
 warnings.filterwarnings('ignore', category=UserWarning)
+
+
+def timeit(func):
+    import time
+    def wrapper(*args, **kwargs):
+        time_begin = time.time()
+        func(*args, **kwargs)
+        time_finish = time.time()
+        print('{0} function took {1:0.3f} ms'.format(func.__name__, (time_finish-time_begin)*1000.0), flush=True)
+    return wrapper
 
 
 def unzip_folder(path, exclude=None):
@@ -73,6 +84,7 @@ class Preprocessor(object):
         string = ascii_string.lower().translate(str.maketrans(PUNC, ' '*len(PUNC)))
         return ' '.join(string.split())
 
+    @timeit
     def process(self):
         print('\npre-precessing texts...', flush=True)
         source = self._df.copy()
@@ -117,93 +129,5 @@ class AdditiveDict(dict):
         super(AdditiveDict, self).__setitem__(key, self.__getitem__(key) + 1)
 
 
-class TF_IDF(object):
-    """
-    using term frequency and inverse document frequency to extract features
-    with highest weights
-    """
-
-    def __init__(self, vectorizer, transformer, limit):
-
-        self.__vectorizer__ = vectorizer
-        self.__transformer__ = transformer
-        self.__limit__ = limit
-
-        self._iterator = None
-        self._vectorizer = None
-        self._transformer = None
-        self._limit = None
-        self._feat_names = None
-        self._tf_idf_matrix = None
-
-    @property
-    def __vectorizer__(self):
-        return self._vectorizer
-
-    @__vectorizer__.setter
-    def __vectorizer__(self, object):
-        if not isinstance(object, sklearn.feature_extraction.text.TfidfVectorizer):
-            raise TypeError('requires scikit-learn TfidfVectorizer.')
-        else:
-            self._vectorizer = object
-
-    @property
-    def __transformer__(self):
-        return self._transformer
-
-    @__transformer__.setter
-    def __transformer__(self, object):
-        if not isinstance(object, sklearn.feature_extraction.text.TfidfTransformer):
-            raise TypeError('requires scikit-learn TfidfTransformer.')
-        else:
-            self._transformer = object
-
-    @property
-    def __limit__(self):
-        return self._limit
-
-    @__limit__.setter
-    def __limit__(self, value):
-        if not isinstance(value, (int, float)):
-            raise TypeError('limit must be a numeric value.')
-        elif not int(value) == value:
-            raise ValueError('limit must be an integer.')
-        elif not 0 < value <= 20:
-            raise ValueError('limit must be between 1 and 20.')
-        else:
-            self._limit = value
-
-    def fit_transform(self, training_set):
-
-        assert isinstance(training_set, np.array)
-        assert isinstance(training_set[0], str)
-
-        self._vectorizer.fit(training_set)
-        self._feat_names = self._vectorizer.get_feature_names()
-
-        tf_idf_matrix = self._vectorizer.transform(training_set)
-        self._tf_idf_matrix = self._transformer.fit_transform(tf_idf_matrix)
-
-        return self
-
-    def __iter__(self):
-        """an iterator to spell out terms with highest weightings"""
-        if not self._tf_idf_matrix:
-            raise RunTimeError('train TF-IDF algorithm first.')
-
-        densed_documents = self._tf_idf_matrix.todense()
-        n = len(densed_documents)
-
-        for doc_id in range(n):
-
-            densed_document = densed_documents[doc_id].tolist()[0]
-            phrase_scores = [pair for pair in zip(range(0, len(densed_document)), densed_document) if pair[1] > 0]
-            
-            named_scores = [
-            self._feat_names[pair[0]] for pair in 
-            sorted(phrase_scores, key=lambda x: x[1], reverse=True)
-            ][:self._limit]
-
-            yield word_feat(named_scores, numeric=False)
 
 
