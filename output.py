@@ -1,8 +1,8 @@
-from helpers import unzip_folder
+from helpers import unzip_folder, timeit
 from settings import PATHS, TrainFiles
 from engine import predicted_labels
 
-
+@timeit
 def generate_submission():
 
 	test = unzip_folder(PATHS['DATA'], exclude=TrainFiles + ['sample_submission.csv'])[0]

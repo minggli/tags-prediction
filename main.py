@@ -1,4 +1,4 @@
-from helpers import Preprocessor, unzip_folder, test
+from helpers import Preprocessor, unzip_folder, test, timeit
 from settings import PATHS, PUNC, TextMining, TrainFiles
 import spacy
 import pandas as pd
@@ -42,6 +42,7 @@ def generate_training_data(data_iter, tags=False):
         yield row[-1] if tags is True else ' '.join(row[1:-1])
 
 
+@timeit
 def nlp_processing(iterator, settings):
     multi_threading_gen = nlp.pipe(texts=generate_training_data(iterator, tags=False), batch_size=5000, n_threads=2)
     feature_tag_pairs = [tuple((pipeline(feature, settings=settings).text, label)) for (feature, label) in
