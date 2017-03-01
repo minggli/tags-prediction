@@ -56,6 +56,7 @@ train_features, train_labels = None, None
 for feat, label in batch_iterator(data=train_data, test_set=False, batch_size=2000):
 	if train_features is None or train_labels is None:
 		train_features, train_labels = feat, label
+		break
 	else:
 		# TODO better way to address performance issue
 		train_features = np.concatenate((train_features, feat), axis=0)
@@ -83,7 +84,6 @@ labels_classes = binarizer.classes_
 onehot_encoded_labels = binarizer.transform(train_labels)
 
 vectorized_train = list(train_word_feats)
-
 # use trained vectorizer to transform test set
 
 dv = DictVectorizer(sparse=False)
