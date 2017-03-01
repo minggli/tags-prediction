@@ -82,7 +82,7 @@ class Preprocessor(object):
         html_string = BeautifulSoup(input_data, 'html5lib').get_text(strip=True)
         ascii_string = html_string.encode('utf-8').decode('ascii', 'ignore')
         string = ascii_string.lower().translate(str.maketrans(PUNC, ' '*len(PUNC)))
-        nlp_string = _pipeline(self._nlp(string)).text
+        nlp_string = self._pipeline(self._nlp(string)).text
         return ' '.join(nlp_string.split())
 
     @timeit
