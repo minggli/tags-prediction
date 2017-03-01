@@ -13,9 +13,10 @@ def timeit(func):
     import time
     def wrapper(*args, **kwargs):
         time_begin = time.time()
-        func(*args, **kwargs)
+        func_output = func(*args, **kwargs)
         time_finish = time.time()
         print('{0} function took {1:0.3f} ms'.format(func.__name__, (time_finish-time_begin)*1000.0), flush=True)
+        return func_output
     return wrapper
 
 

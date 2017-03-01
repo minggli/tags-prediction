@@ -6,14 +6,12 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
 from sklearn.feature_extraction import DictVectorizer
-from nltk.classify import NaiveBayesClassifier
 from nltk.tokenize import word_tokenize
 import numpy as np
 import pickle
 import os
 import sys
 sys.setrecursionlimit(30000)
-
 
 with open(PATHS['DATA'] + '/complete_cache.pickle', 'rb') as f:
 	train_data = pickle.load(f)
@@ -56,16 +54,16 @@ def batch_iterator(data, test_set=False, batch_size=10000):
 
 
 test_features = None
-for feat in batch_iterator(data=test_data, test_set=True, batch_size=10000):
+for feat in batch_iterator(data=test_data, test_set=True, batch_size=2000):
 	if test_features is None:
 		test_features = feat
 		break
 	else:
 		test_features = np.concatenate((test_features, feat), axis=0)
 
-train_features = None
-train_labels = None
-for feat, label in batch_iterator(data=train_data, test_set=False, batch_size=10000):
+
+train_features, train_labels = None, None
+for feat, label in batch_iterator(data=train_data, test_set=False, batch_size=2000):
 	if train_features is None or train_labels is None:
 		train_features, train_labels = feat, label
 		break
@@ -86,10 +84,8 @@ tf_vector = TfidfVectorizer(
 
 tf_trans = TfidfTransformer()
 
-tf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
-
-test_word_feats = tf.fit_transform(test_features)
-train_word_feats = tf.fit_transform(train_features)
+train_tfidf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
+train_word_feats = train_tfidf.fit_transform(train_features)
 
 binarizer = MultiLabelBinarizer(sparse_output=False).fit(train_labels)
 labels_classes = binarizer.classes_
@@ -97,16 +93,29 @@ onehot_encoded_labels = binarizer.transform(train_labels)
 
 vectorized_train = list(train_word_feats)
 
+# use trained vectorizer to transform test set
+
 dv = DictVectorizer(sparse=False)
 dv.fit(vectorized_train)
+
 vectorized_train = dv.transform(vectorized_train)
 
 OvR = OneVsRestClassifier(MultinomialNB())
 OvR.fit(vectorized_train, onehot_encoded_labels)
 print(OvR.multilabel_)
 
+del vectorized_train
+
+test_tfidf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
+test_word_feats = test_tfidf.fit_transform(test_features)
+
 vectorized_test = list(test_word_feats)
 vectorized_test = dv.transform(vectorized_test)
+
 # Named features not encountered during fit or fit_transform will be silently ignored.
 
-OvR.predict(vectorized_test)
+predicted_onehot_matrix = OvR.predict(vectorized_test)
+
+predicted_labels = binarizer.inverse_transform(predicted_onehot_matrix)
+
+print(predicted_labels)
