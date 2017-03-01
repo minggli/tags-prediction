@@ -1,6 +1,5 @@
 from helpers import Preprocessor, unzip_folder, test
 from settings import PATHS, PUNC, TextMining, TrainFiles
-
 import spacy
 import pandas as pd
 import pickle
@@ -58,7 +57,6 @@ if __name__ == '__main__':
         list_of_dataframes = unzip_folder(PATHS['DATA'], exclude=['sample_submission.csv', 'test.csv'])
         df = pd.concat(objs=list_of_dataframes, ignore_index=True)
         train_texts = Preprocessor(df)
-
         data = nlp_processing(iterator=train_texts, settings=TextMining)
 
         with open(PATHS['DATA'] + '/complete_cache.pickle', 'wb') as f:

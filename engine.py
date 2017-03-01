@@ -6,7 +6,6 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
 from sklearn.feature_extraction import DictVectorizer
-from nltk.tokenize import word_tokenize
 import numpy as np
 import pickle
 import os
@@ -53,25 +52,16 @@ def batch_iterator(data, test_set=False, batch_size=10000):
 				yield feature_slice
 
 
-test_features = None
-for feat in batch_iterator(data=test_data, test_set=True, batch_size=2000):
-	if test_features is None:
-		test_features = feat
-		break
-	else:
-		test_features = np.concatenate((test_features, feat), axis=0)
-
-
 train_features, train_labels = None, None
 for feat, label in batch_iterator(data=train_data, test_set=False, batch_size=2000):
 	if train_features is None or train_labels is None:
 		train_features, train_labels = feat, label
-		break
 	else:
 		# TODO better way to address performance issue
 		train_features = np.concatenate((train_features, feat), axis=0)
 		train_labels = np.concatenate((train_labels, label), axis=0)
 
+del train_data
 
 tf_vector = TfidfVectorizer(
 	input='content',
@@ -84,9 +74,10 @@ tf_vector = TfidfVectorizer(
 
 tf_trans = TfidfTransformer()
 
+
 train_tfidf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
 train_word_feats = train_tfidf.fit_transform(train_features)
-
+del train_features
 binarizer = MultiLabelBinarizer(sparse_output=False).fit(train_labels)
 labels_classes = binarizer.classes_
 onehot_encoded_labels = binarizer.transform(train_labels)
@@ -99,23 +90,34 @@ dv = DictVectorizer(sparse=False)
 dv.fit(vectorized_train)
 
 vectorized_train = dv.transform(vectorized_train)
-
+print('beginning training Multinomial Naive Bayes with multi-label strategy.', flush=True)
 OvR = OneVsRestClassifier(MultinomialNB())
 OvR.fit(vectorized_train, onehot_encoded_labels)
-print(OvR.multilabel_)
 
+del train_labels
 del vectorized_train
+
+test_features = None
+for feat in batch_iterator(data=test_data, test_set=True, batch_size=2000):
+	if test_features is None:
+		test_features = feat
+	else:
+		test_features = np.concatenate((test_features, feat), axis=0)
+
+del test_data
 
 test_tfidf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
 test_word_feats = test_tfidf.fit_transform(test_features)
 
+del test_features
+
 vectorized_test = list(test_word_feats)
+# Named features not encountered during fit or fit_transform will be silently ignored.
 vectorized_test = dv.transform(vectorized_test)
 
-# Named features not encountered during fit or fit_transform will be silently ignored.
-
+print('beginning predicting multiple labels on test set.', flush=True)
 predicted_onehot_matrix = OvR.predict(vectorized_test)
+# TODO add probability threshold to OvR to prevent unlikely tags
+del OvR
 
 predicted_labels = binarizer.inverse_transform(predicted_onehot_matrix)
-
-print(predicted_labels)
