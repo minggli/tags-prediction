@@ -4,8 +4,7 @@ from tf_idf import TF_IDF
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
-from sklearn.feature_extraction import DictVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer, CountVectorizer
 import numpy as np
 import pickle
 import os
@@ -56,6 +55,7 @@ train_features, train_labels = None, None
 for feat, label in batch_iterator(data=train_data, test_set=False, batch_size=2000):
 	if train_features is None or train_labels is None:
 		train_features, train_labels = feat, label
+		break
 	else:
 		# TODO better way to address performance issue
 		train_features = np.concatenate((train_features, feat), axis=0)
@@ -85,13 +85,14 @@ onehot_encoded_labels = binarizer.transform(train_labels)
 vectorized_train = list(train_word_feats)
 # use trained vectorizer to transform test set
 
-dv = DictVectorizer(sparse=False)
-dv.fit(vectorized_train)
+cv = CountVectorizer()
+cv.fit(vectorized_train)
 
-vectorized_train = dv.transform(vectorized_train)
-print('beginning training Multinomial Naive Bayes with multi-label strategy.', flush=True)
+vectorized_train = cv.transform(vectorized_train)
+print('beginning training Multinomial Naive Bayes with multi-label strategy.', end='', flush=True)
 OvR = OneVsRestClassifier(MultinomialNB())
 OvR.fit(vectorized_train, onehot_encoded_labels)
+print('done', flush=True)
 
 del train_labels
 del vectorized_train
@@ -100,6 +101,7 @@ test_features = None
 for feat in batch_iterator(data=test_data, test_set=True, batch_size=2000):
 	if test_features is None:
 		test_features = feat
+		break
 	else:
 		test_features = np.concatenate((test_features, feat), axis=0)
 
@@ -112,7 +114,7 @@ del test_features
 
 vectorized_test = list(test_word_feats)
 # Named features not encountered during fit or fit_transform will be silently ignored.
-vectorized_test = dv.transform(vectorized_test)
+vectorized_test = cv.transform(vectorized_test)
 
 print('beginning predicting multiple labels on test set.', flush=True)
 predicted_onehot_matrix = OvR.predict(vectorized_test)
