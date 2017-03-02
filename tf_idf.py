@@ -81,7 +81,6 @@ class TF_IDF(object):
         elif self._tf_idf_matrix is not None:
             n = self._tf_idf_matrix.shape[0]
             for doc_id in range(n):
-                print('post-processing {} of {} documents with TF-IDF scores.'.format(doc_id + 1, n), flush=True)
                 densed_document = self._tf_idf_matrix[doc_id].todense().tolist()[0]
                 # densed_document = densed_documents[doc_id].tolist()[0]
                 phrase_scores = [pair for pair in zip(range(0, len(densed_document)), densed_document) if pair[1] > 0]
@@ -89,4 +88,6 @@ class TF_IDF(object):
                 self._feat_names[pair[0]] for pair in 
                 sorted(phrase_scores, key=lambda x: x[1], reverse=True)
                 ][:self._limit])
-                yield ' '.join(named_scores)
+                output_string = ' '.join(named_scores)
+                print('post-processing {} of {} documents with TF-IDF scores.'.format(doc_id + 1, n), flush=True)
+                yield output_string

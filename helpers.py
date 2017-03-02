@@ -21,6 +21,11 @@ def timeit(func):
     return wrapper
 
 
+def sort_coo(m):
+    tuples = zip(m.row, m.col, m.data)
+    return sorted(tuples, key=lambda x: (x[0], x[2]))
+
+
 def unzip_folder(path, exclude=None):
     """read zip files and load uncompressed csv files into a list of panda dataframes"""
 
