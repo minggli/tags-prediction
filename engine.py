@@ -14,10 +14,6 @@ with open(PATHS['DATA'] + '/train_data.npz', 'rb') as f:
     train_features = npz_object['train_features']
     train_labels = npz_object['train_labels']
 
-with open(PATHS['DATA'] + '/test_data.npy', 'rb') as f:
-    npz_object = np.load(f)
-    test_features = npz_object['test_features']
-
 tf_vector = TfidfVectorizer(
 	input='content',
 	encoding='utf-8',
@@ -57,8 +53,9 @@ print('done', flush=True)
 del train_labels
 del vectorized_train
 
-with open(PATHS['DATA'] + '/test_features.npy', 'rb') as f:
-    test_features = np.load(f)
+with open(PATHS['DATA'] + '/test_data.npy', 'rb') as f:
+    npz_object = np.load(f)
+    test_features = npz_object['test_features']
 
 test_tfidf = TF_IDF(vectorizer=tf_vector, transformer=tf_trans, limit=LIMIT)
 test_word_feats = test_tfidf.fit_transform(test_features)
