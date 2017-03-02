@@ -9,11 +9,14 @@ import pickle
 import os
 import sys
 
-with open(PATHS['DATA'] + '/train_features.npy', 'rb') as f:
-    train_features = np.load(f)
+with open(PATHS['DATA'] + '/train_data.npz', 'rb') as f:
+    npz_object = np.load(f)
+    train_features = npz_object['train_features']
+    train_labels = npz_object['train_labels']
 
-with open(PATHS['DATA'] + '/train_labels.npy', 'rb') as f:
-    train_labels = np.load(f)
+with open(PATHS['DATA'] + '/test_data.npy', 'rb') as f:
+    npz_object = np.load(f)
+    test_features = npz_object['test_features']
 
 tf_vector = TfidfVectorizer(
 	input='content',

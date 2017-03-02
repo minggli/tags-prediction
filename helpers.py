@@ -1,11 +1,12 @@
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
 import os
-import zipfile as zf
 import spacy
+import warnings
+import zipfile as zf
 from settings import PUNC
 from bs4 import BeautifulSoup
-import warnings
+from sklearn.feature_extraction.text import TfidfTransformer, TfidfVectorizer
+
 warnings.filterwarnings('ignore', category=UserWarning)
 
 
