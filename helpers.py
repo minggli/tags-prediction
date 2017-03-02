@@ -82,8 +82,8 @@ class Preprocessor(object):
         html_string = BeautifulSoup(input_data, 'html5lib').get_text(strip=True)
         ascii_string = html_string.encode('utf-8').decode('ascii', 'ignore')
         string = ascii_string.lower().translate(str.maketrans(PUNC, ' '*len(PUNC)))
-        nlp_string = self._pipeline(self._nlp(string)).text
-        return ' '.join(nlp_string.split())
+        string = self._pipeline(self._nlp(string)).text
+        return ' '.join(string.split())
 
     @timeit
     def process(self):
@@ -98,29 +98,16 @@ class Preprocessor(object):
         if not self.is_processed:
             self.process()
         for row in self.data.itertuples():
-            yield tuple((' '.join(row[1:-1]), row[-1]))
+            yield ' '.join(row[1:3]), row[-1].split()
 
-    def _pipeline(self, doc_object, settings={'pos': True, 'lemma': True}):
-        return self.__lemmatize__(self.__pos_filter__(doc_object, switch=settings['pos']), switch=settings['lemma'])
-
-    def __pos_filter__(
+    def _pipeline(
         self,
         doc_object,
-        switch=True, 
         parts={'ADJ', 'DET', 'ADV', 'ADP', 'VERB', 'NOUN', 'PART'}
         ):
         """filter unrelated parts of speech (POS) and return required parts"""
         assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
-        return self._nlp(' '.join([str(token) for token in doc_object if token.pos_ in parts])) if switch else doc_object
-
-    def __lemmatize__(
-        self,
-        doc_object,
-        switch=True
-        ):
-        """using SpaCy's lemmatization to performing stemming of words"""
-        assert isinstance(doc_object, spacy.tokens.doc.Doc), 'require a SpaCy document'
-        return self._nlp(' '.join([str(token.lemma_) for token in doc_object])) if switch else doc_object
+        return self._nlp(' '.join([str(token.lemma_) for token in doc_object if token.pos_ in parts]))
 
     def __str__(self):
         return '{} {} object'.format(self.status[self.is_processed], self.__class__.__name__)
@@ -150,4 +137,3 @@ class AdditiveDict(dict):
 
     def __setitem__(self, key, value):
         super(AdditiveDict, self).__setitem__(key, self.__getitem__(key) + 1)
-
