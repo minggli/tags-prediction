@@ -45,7 +45,7 @@ cv = CountVectorizer()
 cv.fit(vectorized_train)
 
 vectorized_train = cv.transform(vectorized_train)
-print('beginning training Multinomial Naive Bayes with multi-label strategy.', end='', flush=True)
+print('beginning training Multinomial Naive Bayes with multi-label strategy...', end='', flush=True)
 OvR = OneVsRestClassifier(MultinomialNB(), n_jobs=-1)
 OvR.fit(vectorized_train, onehot_encoded_labels)
 print('done', flush=True)
@@ -53,7 +53,7 @@ print('done', flush=True)
 del train_labels
 del vectorized_train
 
-with open(PATHS['DATA'] + '/test_data.npy', 'rb') as f:
+with open(PATHS['DATA'] + '/test_data.npz', 'rb') as f:
     npz_object = np.load(f)
     test_features = npz_object['test_features']
 
